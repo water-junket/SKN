@@ -1,0 +1,26 @@
+body {
+	font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+	text-decoration: none;
+}
+
+.skn.eighty.wide{
+	width: 80%;
+	margin: 10px auto;
+}
+
+.skn.main.search{
+	width: 320px;
+	margin: 0px auto;
+	padding-top: 200px;
+}
+
+.skn.main.search>div{
+	width: 500px;
+}
+
+.ui.input{
+	vertical-align: middle;
+}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SKN</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="/style/style.css"/>
+<link rel="stylesheet" href="/semantic/semantic.min.css"/>
+<script src="/lib/jquery-1.11.3.min.js" type="text/javascript"></script>
+<script src="/lib/avalon.min.js" type="text/javascript"></script>
+<script src="/semantic/semantic.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+var vm = avalon.define({
+	$id:"index",			//控制器id
+	state:<%=state%>,		//后台渲染的登录与否状态，如需要独立js，考虑用ajax获取登录状态
+	stocks:[],
+	login_show:function(){$('#login_panel').modal('setting', {closable : false, onApprove: login}).modal('show');},//登录按钮
+	name:"",				//登录名
+	pass:"",				//登录密码
+	code:"",				//股票代码
+	login_error:false,		//登录错误状态
+	stock_error:false,		//股票代码错误状态
+	logout_btn:logout,		//登出按钮
+	test: tf,
+	input:function(e){if(e.which==13||e.which==108){if(this.value) location.href="/stock/"+fill0(this.value)+"-1";else vm.stock_error=true;}}//回车提交股票代码
+});
+
+$.getJSON('/stock/viewed.json').done(function(json){
+	vm.stocks=json;
+});
+
+function login(){
+	$.post("/ajax_login",{name:vm.name,password:vm.pass}).done(function(data){
+		vm.name="";
+		vm.pass="";
+		vm.login_error=false;
+		vm.state=true;
+		$('#login_panel').modal('hide');
+	}).fail(function(data){
+		vm.login_error=true;
+	});
+	return false;
+}
+
+function logout(){
+	$.post("/ajax_logout");
+	vm.state=false;
+}
+
+function fill0(str){
+	if(str.length>6) return str.substr(str.length-6);
+	for(;str.length<6;str="0"+str){}
+	return str;
+}
+
+function tf(e){
+	var t=e.currentTarget?e.currentTarget:e.srcElement;
+	$.post("/stock/viewed/"+t.dataset.code);
+}
+
+avalon.scan();
+</script>
+</head>
+<body ms-controller="index">
+<div></div>
+<div class="skn main search">
+	<div>
+		<div class="ui small action input" ms-class="error:stock_error">
+			<input placeholder="股票代码" type="number" maxlength="6" style="width: 100px;" ms-duplex="code" ms-keydown="input">
+			<a class="ui orange submit button" ms-href="/stock/{{fill0(code)}}-1">参上</a>
+		</div>
+		<div class="ui buttons" ms-visible="state">
+			<div class="ui teal icon button"><i class="user icon"></i></div>
+			<div class="ui button" ms-click="logout_btn">登出</div>
+		</div>
+		<div class="ui buttons" ms-visible="!state">
+			<div class="ui teal button" ms-click="login_show">登录</div>
+			<div class="or"></div>
+			<a class="ui teal button" href="/register.html">注册</a>
+		</div>
+	</div>
+</div>
+<div class="skn eighty wide">
+	<div class="ui buttons" ms-repeat="stocks">
+		<a class="ui orange button" ms-href="/stock/{{el}}-1">{{el}}</a>
+		<div class="ui red icon button" ms-click-1="test" ms-click-2="$remove" ms-data-code="el"><i class="remove icon"></i></div>
+	</div>
+</div>
+<div class="ui basic modal" id="login_panel">
+	<i class="close icon"></i>
+	<div class="header">用户登录</div>
+	<div class="content">
+		<div class="left">
+			<div class="ui small labeled inverted input" ms-class="error:login_error">
+				<div class="ui teal label">昵称</div>
+				<input type="text" placeholder="昵称" ms-duplex="name">
+			</div>
+			<div class="ui small labeled inverted input" ms-class="error:login_error">
+				<div class="ui teal label">密码</div>
+				<input type="password" placeholder="密码" ms-duplex="pass">
+			</div>
+		</div>
+	</div>
+	<div class="actions">
+		<div class="ui teal positive button">登录</div>
+	</div>
+</div>
+</body>
+</html>

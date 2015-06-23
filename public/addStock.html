@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>添加股票</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="/style/style.css"/>
+<script src="/lib/jquery-1.11.3.min.js" type="text/javascript"></script>
+<script src="/lib/avalon.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+var vm = avalon.define({
+	$id:"test",
+	stockTitle:"",
+	stockCode:"",
+	add:addStock
+});
+
+function addStock(){
+	$.post("/stock/add",{
+		title: vm.stockTitle,
+		code: vm.stockCode
+	}).done(function(json){
+		if(json.message=="success"){
+			vm.stockTitle="";
+			vm.stockCode="";
+		}else console.log(json.message);
+	});
+}
+
+avalon.scan();
+</script>
+</head>
+<body>
+<h1>添加股票</h1>
+<div ms-controller="test">
+	名称<input type="text" ms-duplex="stockTitle"><br>
+	代码<input type="text" ms-duplex="stockCode"><br>
+	<button ms-click="add">新增</button>
+</div>
+</body>
+</html>

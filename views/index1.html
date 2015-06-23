@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><%= title %></title>
+<link rel='stylesheet' href='/style/style.css' />
+</head>
+<body>
+<h1><%= title %></h1>
+<p>Welcome to <%= title %></p>
+<ul>
+<% for(var i in list){ %>
+	<li><%= list[i].name %></li>
+<% } %>
+</ul>
+</body>
+</html>

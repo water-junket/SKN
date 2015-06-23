@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Express</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="/style/style.css"/>
+<script src="/lib/jquery-1.11.3.min.js" type="text/javascript"></script>
+<script src="/lib/avalon.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+	var vm = avalon.define({
+		$id:"test",
+		data:{},
+		newName:"",
+		newPw:"",
+		add:addUser
+	});
+
+	$.getJSON('/user/2.json').done(function(res){
+		vm.data=res;
+	});
+
+	function addUser(){
+		$.post("/user",{
+			name: vm.newName,
+			password: vm.newPw
+		}).done(function(){
+			vm.newName="";
+			vm.newPw="";
+		});
+	}
+
+	avalon.scan();
+</script>
+</head>
+<body>
+<h1>Express</h1>
+<p>欢迎使用Express</p>
+<div ms-controller="test">
+	<div>{{data.title +" | "+ data.id }}</div>
+	<ul>
+		<li ms-repeat="data.list">{{el._id}}:{{el.name}}:{{el.password}}</li>
+	</ul>
+	<input type="text" ms-duplex="newName">
+	<input type="password" ms-duplex="newPw">
+	<button ms-click="add">新增</button>
+</div>
+<form action="/login" method="post">
+	<input type="text" name="name">
+	<input type="password" name="password">
+	<input type="submit" value="登录">
+</form>
+</body>
+</html>
