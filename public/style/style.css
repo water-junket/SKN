@@ -7,6 +7,7 @@ a {
 }
 
 .skn.eighty.wide{
+	position: relative;
 	width: 80%;
 	margin: 10px auto;
 }

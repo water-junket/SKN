@@ -2,9 +2,67 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title><%=stock.title%></title>
+<link rel="stylesheet" href="/style/style.css"/>
+<link rel="stylesheet" href="/semantic/semantic.min.css"/>
+<script src="/lib/jquery-1.11.3.min.js" type="text/javascript"></script>
+<script src="/lib/avalon.min.js" type="text/javascript"></script>
+<script src="/semantic/semantic.min.js" type="text/javascript"></script>
+<script src="http://hq.sinajs.cn/list=<%=stock.s_code%>" type="text/javascript"></script>
+<script type="text/javascript">
+var sp=eval("hq_str_<%=stock.s_code%>").split(",");
+var vm = avalon.define({
+	$id:"sider",			//控制器id
+	baseline:sp[2],			//昨日收盘
+	today_start:sp[1],		//今日开盘
+	now:sp[3],				//当前价格
+	today_high:sp[4],		//今日最高
+	today_low:sp[5],		//今日最低
+	buy1:sp[6],				//买一报价
+	sell1:sp[7],			//卖一报价
+	volume:sp[8],			//成交数量
+	turnover:sp[9],			//成交金额
+	time:sp[31],			//刷新时间
+	color:function(p){
+			if(!p) p=sp[3];
+			if(p==="0.00") return "#000";
+			if(p>vm.baseline) return "#f54545";
+			if(p<vm.baseline) return "#0f990f";
+			return "#000";
+		}
+});
+
+function color(p){
+}
+
+avalon.scan();
+</script>
 </head>
 <body>
-
+<div class="ui visible sidebar" ms-controller="sider">
+	<h1 class="ui header" ms-css-color="{{color()}}"><%=stock.title%></h1>
+	<div class="ui list">
+		<div class="item">
+			<div class="ui horizontal label">今日开盘</div>
+			{{today_start}}
+		</div>
+		<div class="item">
+			<div class="ui horizontal label">昨日收盘</div>
+			{{baseline}}
+		</div>
+		<div class="item">
+			<div class="ui horizontal label">当前价格</div>
+			{{now}}
+		</div>
+		<div class="item">
+			<div class="ui horizontal label">今日最高</div>
+			{{today_high}}
+		</div>
+		<div class="item">
+			<div class="ui horizontal label">今日最低</div>
+			{{today_low}}
+		</div>
+	</div>
+</div>
 </body>
 </html>

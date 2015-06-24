@@ -6,6 +6,8 @@ var stocks = require('monk')('localhost:27017/test').get("stock");
 function Stock(stock){
 	this.title = stock.title;
 	this.code = stock.code;
+	if(this.code.indexOf("00") === 0) this.s_code = "sz"+this.code;
+	else if(this.code.indexOf("60") === 0) this.s_code = "sh"+this.code;
 }
 
 Stock.findOne = function(stock,callback){
