@@ -6,7 +6,13 @@ a {
 	text-decoration: none;
 }
 
+[ms-controller] {
+	visibility: hidden;
+	display: none;
+}
+
 .skn.eighty.wide{
+	position: relative;
 	width: 80%;
 	margin: 10px auto;
 }
@@ -23,4 +29,8 @@ a {
 
 .ui.input{
 	vertical-align: middle;
+}
+
+.stock.ui.sidebar{
+	width: 180px;
 }
