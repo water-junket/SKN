@@ -20,15 +20,29 @@ var vm = avalon.define({
 	today_low:sp[5],		//今日最低
 	buy1:sp[6],				//买一报价
 	sell1:sp[7],			//卖一报价
-	volume:sp[8],			//成交数量
-	turnover:sp[9],			//成交金额
+	volume:{				//成交数量
+			get:function(){
+				var v=parseInt(sp[8], 10);
+				if(v>100000000) return (v/100000000).toPrecision(3).substring(0,4)+"亿";
+				if(v>10000) return (v/10000).toPrecision(3).substring(0,4)+"万";
+				return v;
+			}
+		},
+	turnover:{				//成交金额
+			get:function(){
+				var v=parseInt(sp[9], 10);
+				if(v>100000000) return (v/100000000).toPrecision(3).substring(0,4)+"亿";
+				if(v>10000) return (v/10000).toPrecision(3).substring(0,4)+"万";
+				return v;
+			}
+		},
 	time:sp[31],			//刷新时间
-	color:function(p){
+	color:function(p,f){
 			if(!p) p=sp[3];
-			if(p==="0.00") return "#000";
-			if(p>vm.baseline) return "#f54545";
-			if(p<vm.baseline) return "#0f990f";
-			return "#000";
+			if(p==="0.00"||p==="0") return f?"":"rgba(0,0,0,0.8)";
+			if(p>vm.baseline) return f?"red":"#f54545";
+			if(p<vm.baseline) return f?"green":"#0f990f";
+			return f?"":"rgba(0,0,0,0.8)";
 		}
 });
 
@@ -39,30 +53,59 @@ avalon.scan();
 </script>
 </head>
 <body>
-<div class="ui visible sidebar" ms-controller="sider">
-	<h1 class="ui header" ms-css-color="{{color()}}"><%=stock.title%></h1>
-	<div class="ui list">
-		<div class="item">
-			<div class="ui horizontal label">今日开盘</div>
-			{{today_start}}
-		</div>
-		<div class="item">
-			<div class="ui horizontal label">昨日收盘</div>
-			{{baseline}}
-		</div>
-		<div class="item">
-			<div class="ui horizontal label">当前价格</div>
-			{{now}}
-		</div>
-		<div class="item">
-			<div class="ui horizontal label">今日最高</div>
-			{{today_high}}
-		</div>
-		<div class="item">
-			<div class="ui horizontal label">今日最低</div>
-			{{today_low}}
+<a class="floating red ui label"><i class="line chart icon"></i></a>
+
+<aside class="stock ui visible sidebar" ms-controller="sider">
+	<div class="ui card" ms-class="{{color(now,true)}}">
+		<div class="content">
+			<a class="ui right ribbon label"><i class="refresh icon"></i></a>
+			<h1 class="header" ms-css-color="{{color()}}"><%=stock.title%></h1>
+			<div class="ui list">
+				<div class="item" ms-css-color="{{color(today_start)}}">
+					<div class="ui horizontal label">今日开盘</div>
+					{{today_start}}
+				</div>
+				<div class="item">
+					<div class="ui horizontal label">昨日收盘</div>
+					{{baseline}}
+				</div>
+				<div class="item" ms-css-color="{{color()}}">
+					<div class="ui horizontal label">当前价格</div>
+					{{now}}
+				</div>
+				<div class="item" ms-css-color="{{color(today_high)}}">
+					<div class="ui horizontal label">今日最高</div>
+					{{today_high}}
+				</div>
+				<div class="item" ms-css-color="{{color(today_low)}}">
+					<div class="ui horizontal label">今日最低</div>
+					{{today_low}}
+				</div>
+				<div class="item" ms-css-color="{{color(buy1)}}">
+					<div class="ui horizontal label">买一报价</div>
+					{{buy1}}
+				</div>
+				<div class="item" ms-css-color="{{color(sell1)}}">
+					<div class="ui horizontal label">卖一报价</div>
+					{{sell1}}
+				</div>
+				<div class="item">
+					<div class="ui horizontal label">成交数量</div>
+					{{volume}}
+				</div>
+				<div class="item">
+					<div class="ui horizontal label">成交金额</div>
+					{{turnover}}
+				</div>
+				<div class="item">
+					<div class="ui horizontal label">刷新时间</div>
+					{{time}}
+				</div>
+			</div>
 		</div>
 	</div>
+</aside>
+<div>
 </div>
 </body>
 </html>

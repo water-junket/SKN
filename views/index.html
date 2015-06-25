@@ -41,16 +41,16 @@ var vm = avalon.define({
 			else if(code.indexOf("60")==0) code="sh"+code;
 			if(eval("hq_str_"+code)){
 				var sp=eval("hq_str_"+code).split(",");
-				if(sp[3]==="0.00") return "#000";
+				if(sp[3]==="0.00") return "rgba(0,0,0,0.6)";
 				if(sp[3]>sp[2]) return "#f54545";
 				if(sp[3]<sp[2]) return "#0f990f";
 			}
-			return "#000";
+			return "rgba(0,0,0,0.6)";
 		}
 });
 
 //请求浏览过的股票
-$.getJSON('/stock/viewed.json').done(function(json){
+$.getJSON('/stock/viewed.json?d='+(new Date()).toString()).done(function(json){
 	var temp=[];
 	for(var i=0;i<json.length;i++){
 		if(json[i].indexOf("00")==0) temp.push("sz"+json[i]);

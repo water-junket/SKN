@@ -53,6 +53,7 @@ router.post('/user', function(req, res, next) {
 		}else{
 			user=new User({name: req.body.name, password: req.body.password});
 			user.post();
+			res.json();
 		}
 	});
 });
