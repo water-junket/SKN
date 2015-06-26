@@ -14,7 +14,7 @@ var vm = avalon.define({
 	state:<%=state%>,		//后台渲染的登录与否状态，如需要独立js，考虑用ajax获取登录状态
 	stocks:[],				//访问过的股票
 	login_show:function(){	//登录按钮
-			$('#login_panel').modal('setting', {closable : false, onApprove: login}).modal('show');
+			$('#login_panel').modal({closable : false, onApprove: login}).modal('show');
 		},
 	name:"",				//登录名
 	pass:"",				//登录密码
@@ -42,30 +42,33 @@ var vm = avalon.define({
 			if(eval("hq_str_"+code)){
 				var sp=eval("hq_str_"+code).split(",");
 				if(sp[3]==="0.00") return "rgba(0,0,0,0.6)";
-				if(sp[3]>sp[2]) return "#f54545";
-				if(sp[3]<sp[2]) return "#0f990f";
+				if(parseFloat(sp[3])>parseFloat(sp[2])) return "#f54545";
+				if(parseFloat(sp[3])<parseFloat(sp[2])) return "#0f990f";
 			}
 			return "rgba(0,0,0,0.6)";
 		}
 });
 
 //请求浏览过的股票
-$.getJSON('/stock/viewed.json?d='+(new Date()).toString()).done(function(json){
-	var temp=[];
-	for(var i=0;i<json.length;i++){
-		if(json[i].indexOf("00")==0) temp.push("sz"+json[i]);
-		else if(json[i].indexOf("60")==0) temp.push("sh"+json[i]);
+$.getJSON('/stock/viewed.json?d='+new Date().getTime()).done(function(json){
+	if(json.length==0) vm.stocks_loaded=true;
+	else{
+		var temp=[];
+		for(var i=0;i<json.length;i++){
+			if(json[i].indexOf("00")==0) temp.push("sz"+json[i]);
+			else if(json[i].indexOf("60")==0) temp.push("sh"+json[i]);
+		}
+		//请求浏览过的股票的新浪数据
+		$.ajax({
+			url: 'http://hq.sinajs.cn/list='+temp.join(','),
+			dataType: "script",
+			cache:true,
+			success:function(){
+					vm.stocks=json;
+					vm.stocks_loaded=true;
+				}
+		});
 	}
-	//请求浏览过的股票的新浪数据
-	$.ajax({
-		url: 'http://hq.sinajs.cn/list='+temp.join(','),
-		dataType: "script",
-		cache:true,
-		success:function(){
-				vm.stocks=json;
-				vm.stocks_loaded=true;
-			}
-	});
 });
 
 //请求登录
@@ -101,13 +104,13 @@ avalon.scan();
 			<a class="ui submit button" ms-href="/stock/{{fill0(code)}}-1">参上</a>
 		</div>
 		<div class="ui buttons" ms-visible="state">
-			<div class="ui teal icon button"><i class="user icon"></i></div>
+			<div class="ui blue icon button"><i class="user icon"></i></div>
 			<div class="ui button" ms-click="logout_btn">登出</div>
 		</div>
 		<div class="ui buttons" ms-visible="!state">
-			<div class="ui teal button" ms-click="login_show">登录</div>
+			<div class="ui blue button" ms-click="login_show">登录</div>
 			<div class="or"></div>
-			<a class="ui teal button" href="/register.html">注册</a>
+			<a class="ui blue button" href="/register.html">注册</a>
 		</div>
 	</div>
 </div>
@@ -116,7 +119,7 @@ avalon.scan();
 		<a class="ui button" ms-href="/stock/{{el}}-1" ms-css-color="{{color(el)}}">{{el}}</a>
 		<div class="ui red icon button" ms-click-1="forget" ms-click-2="$remove" ms-data-code="el"><i class="remove icon"></i></div>
 	</div>
-	<div class="ui active dimmer" ms-class="disabled:stocks_loaded">
+	<div class="ui dimmer" ms-class="active:!stocks_loaded">
 		<div class="ui loader"></div>
 	</div>
 </div>
@@ -126,17 +129,17 @@ avalon.scan();
 	<div class="content">
 		<div class="left">
 			<div class="ui small labeled inverted input" ms-class="error:login_error">
-				<div class="ui teal label">昵称</div>
+				<div class="ui blue label">昵称</div>
 				<input type="text" placeholder="昵称" ms-duplex="name">
 			</div>
 			<div class="ui small labeled inverted input" ms-class="error:login_error">
-				<div class="ui teal label">密码</div>
+				<div class="ui blue label">密码</div>
 				<input type="password" placeholder="密码" ms-duplex="pass">
 			</div>
 		</div>
 	</div>
 	<div class="actions">
-		<div class="ui positive teal button">登录</div>
+		<div class="ui positive blue button">登录</div>
 	</div>
 </div>
 </body>

@@ -79,14 +79,14 @@ router.post('/stock/add', isAuthenticated, function(req, res, next) {
 router.get('/stock/:id-:page', function(req, res, next) {
 	if(stocks[req.params.id]){
 		session_stock(req.session,req.params.id);
-		res.render('stock', {stock: stocks[req.params.id]});
+		res.render('stock', {stock: stocks[req.params.id], user: req.user});
 	}else{
 		Stock.findOne({code: req.params.id}, function(e,stock) {
 			if(e) next(e);
 			else if(stock){
 				stocks[req.params.id]=stock;
 				session_stock(req.session,req.params.id);
-				res.render('stock', {stock: stock});
+				res.render('stock', {stock: stock, user: req.user});
 			}else res.redirect('/404.html');
 		});
 	}

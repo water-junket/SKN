@@ -4,108 +4,178 @@
 <meta charset="UTF-8">
 <title><%=stock.title%></title>
 <link rel="stylesheet" href="/style/style.css"/>
+<link rel="stylesheet" href="/style/stock.css"/>
 <link rel="stylesheet" href="/semantic/semantic.min.css"/>
 <script src="/lib/jquery-1.11.3.min.js" type="text/javascript"></script>
 <script src="/lib/avalon.min.js" type="text/javascript"></script>
 <script src="/semantic/semantic.min.js" type="text/javascript"></script>
-<script src="http://hq.sinajs.cn/list=<%=stock.s_code%>" type="text/javascript"></script>
 <script type="text/javascript">
-var sp=eval("hq_str_<%=stock.s_code%>").split(",");
 var vm = avalon.define({
 	$id:"sider",			//控制器id
-	baseline:sp[2],			//昨日收盘
-	today_start:sp[1],		//今日开盘
-	now:sp[3],				//当前价格
-	today_high:sp[4],		//今日最高
-	today_low:sp[5],		//今日最低
-	buy1:sp[6],				//买一报价
-	sell1:sp[7],			//卖一报价
-	volume:{				//成交数量
-			get:function(){
-				var v=parseInt(sp[8], 10);
-				if(v>100000000) return (v/100000000).toPrecision(3).substring(0,4)+"亿";
-				if(v>10000) return (v/10000).toPrecision(3).substring(0,4)+"万";
-				return v;
-			}
+	sp:[],//股票数据
+	volume:function(){		//成交数量
+			var v=parseInt(vm.sp[8], 10);
+			if(v>100000000) return (v/100000000).toPrecision(4)+"亿";
+			if(v>10000) return (v/10000).toPrecision(4)+"万";
+			return v;
 		},
-	turnover:{				//成交金额
-			get:function(){
-				var v=parseInt(sp[9], 10);
-				if(v>100000000) return (v/100000000).toPrecision(3).substring(0,4)+"亿";
-				if(v>10000) return (v/10000).toPrecision(3).substring(0,4)+"万";
-				return v;
-			}
+	turnover:function(){	//成交金额
+			var v=parseInt(vm.sp[9], 10);
+			if(v>100000000) return (v/100000000).toPrecision(4)+"亿";
+			if(v>10000) return (v/10000).toPrecision(4)+"万";
+			return v;
 		},
-	time:sp[31],			//刷新时间
 	color:function(p,f){
-			if(!p) p=sp[3];
+			if(!p) p=vm.sp[3];
 			if(p==="0.00"||p==="0") return f?"":"rgba(0,0,0,0.8)";
-			if(p>vm.baseline) return f?"red":"#f54545";
-			if(p<vm.baseline) return f?"green":"#0f990f";
-			return f?"":"rgba(0,0,0,0.8)";
+			if(parseFloat(p)>parseFloat(vm.sp[2])) return f?"red":"#f54545";
+			if(p===vm.sp[2]) return f?"":"rgba(0,0,0,0.8)";
+			return f?"green":"#0f990f";
+		},
+	loadtimes:0,
+	load:function(){
+			var s=eval("window.hq_str_<%=stock.s_code%>");
+			if(s){
+				delete eval("hq_str_<%=stock.s_code%>");
+			}
+			vm.loadtimes++;
+			$(".ui.popup img").each(function(){
+				$(this).attr("src",$(this).attr("src").replace(/=\w/,"="+vm.loadtimes));
+			});
+			$("<img/>").attr("src","http://image.sinajs.cn/newchart/min/n/<%=stock.s_code%>.gif?t="+vm.loadtimes);
+			$("<img/>").attr("src","http://image.sinajs.cn/newchart/daily/n/<%=stock.s_code%>.gif?t="+vm.loadtimes);
+			$("<img/>").attr("src","http://image.sinajs.cn/newchart/weekly/n/<%=stock.s_code%>.gif?t="+vm.loadtimes);
+			$("<img/>").attr("src","http://image.sinajs.cn/newchart/monthly/n/<%=stock.s_code%>.gif?t="+vm.loadtimes);
+			$.ajax({
+				url: 'http://hq.sinajs.cn/list=<%=stock.s_code%>',
+				dataType: "script",
+				cache:true,
+				success:function(){
+						vm.sp=eval("hq_str_<%=stock.s_code%>").split(",");
+					}
+			});
+		},
+	post_show:function(){
+			$('#post_panel').modal({closable : false, onApprove: post, dimmerSettings: {opacity: 0.15}}).modal('show');
 		}
 });
 
-function color(p){
+//发贴
+function post(){
 }
+
+$(function($){
+	vm.load();
+	$(".pop_click").popup({on:"click",preserve:true});
+	$(".pop").popup();
+});
 
 avalon.scan();
 </script>
 </head>
 <body>
-<a class="floating red ui label"><i class="line chart icon"></i></a>
-
 <aside class="stock ui visible sidebar" ms-controller="sider">
-	<div class="ui card" ms-class="{{color(now,true)}}">
+	<%if(user){%>
+	<div class="ui blue card image">
+		<a class="ui right ribbon blue label pop" data-content="Bottom Right" data-position="bottom left"><i class="help circle icon"></i></a>
 		<div class="content">
-			<a class="ui right ribbon label"><i class="refresh icon"></i></a>
-			<h1 class="header" ms-css-color="{{color()}}"><%=stock.title%></h1>
+			<img class="ui circular image" src="/img/default_head.jpg">
+			<h1 class="center aligned header"><%=user.name%></h1>
 			<div class="ui list">
-				<div class="item" ms-css-color="{{color(today_start)}}">
+				<div class="item">
+					<div class="ui horizontal label">生命</div>
+					
+				</div>
+				<div class="item">
+					<div class="ui horizontal label">攻击</div>
+					
+				</div>
+				<div class="item">
+					<div class="ui horizontal label">防御</div>
+					
+				</div>
+				<div class="item">
+					<div class="ui horizontal label">经验</div>
+					
+				</div>
+				<div class="center aligned item">
+					<button class="ui mini blue labeled icon button" ms-class="{{color(sp[3],true)}}" ms-click="post_show"><i class="write icon"></i>发表新帖</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<%}%>
+	<div class="ui card image" ms-class="{{color(sp[3],true)}}">
+		<a class="ui right ribbon blue label" ms-click="load"><i class="refresh icon"></i></a>
+		<div class="content">
+			<h1 class="center aligned header" ms-css-color="{{color()}}"><%=stock.title%></h1>
+			<div class="ui list">
+				<div class="item" ms-css-color="{{color(sp[1])}}">
 					<div class="ui horizontal label">今日开盘</div>
-					{{today_start}}
+					{{sp[1]}}
 				</div>
 				<div class="item">
 					<div class="ui horizontal label">昨日收盘</div>
-					{{baseline}}
+					{{sp[2]}}
 				</div>
 				<div class="item" ms-css-color="{{color()}}">
 					<div class="ui horizontal label">当前价格</div>
-					{{now}}
+					{{sp[3]}}
 				</div>
-				<div class="item" ms-css-color="{{color(today_high)}}">
+				<div class="item" ms-css-color="{{color(sp[4])}}">
 					<div class="ui horizontal label">今日最高</div>
-					{{today_high}}
+					{{sp[4]}}
 				</div>
-				<div class="item" ms-css-color="{{color(today_low)}}">
+				<div class="item" ms-css-color="{{color(sp[5])}}">
 					<div class="ui horizontal label">今日最低</div>
-					{{today_low}}
+					{{sp[5]}}
 				</div>
-				<div class="item" ms-css-color="{{color(buy1)}}">
+				<div class="item" ms-css-color="{{color(sp[6])}}">
 					<div class="ui horizontal label">买一报价</div>
-					{{buy1}}
+					{{sp[6]}}
 				</div>
-				<div class="item" ms-css-color="{{color(sell1)}}">
+				<div class="item" ms-css-color="{{color(sp[7])}}">
 					<div class="ui horizontal label">卖一报价</div>
-					{{sell1}}
+					{{sp[7]}}
 				</div>
 				<div class="item">
 					<div class="ui horizontal label">成交数量</div>
-					{{volume}}
+					{{volume()}}
 				</div>
 				<div class="item">
 					<div class="ui horizontal label">成交金额</div>
-					{{turnover}}
+					{{turnover()}}
 				</div>
 				<div class="item">
-					<div class="ui horizontal label">刷新时间</div>
-					{{time}}
+					<div class="ui horizontal label">更新时间</div>
+					{{sp[31]}}
+				</div>
+				<div class="ui blue inverted small menu">
+					<div class="icon item"><i class="line chart icon"></i></div>
+					<a class="text item pop_click" ms-attr-data-html="<div class='ui img'><img src='http://image.sinajs.cn/newchart/min/n/<%=stock.s_code%>.gif?t={{loadtimes}}'></div>" data-position="right center">分时</a>
+					<a class="text item pop_click" ms-attr-data-html="<div class='ui img'><img src='http://image.sinajs.cn/newchart/daily/n/<%=stock.s_code%>.gif?t={{loadtimes}}'></div>" data-position="right center">日k</a>
+					<a class="text item pop_click" ms-attr-data-html="<div class='ui img'><img src='http://image.sinajs.cn/newchart/weekly/n/<%=stock.s_code%>.gif?t={{loadtimes}}'></div>" data-position="right center">周k</a>
+					<a class="text item pop_click" ms-attr-data-html="<div class='ui img'><img src='http://image.sinajs.cn/newchart/monthly/n/<%=stock.s_code%>.gif?t={{loadtimes}}'></div>" data-position="right center">月k</a>
 				</div>
 			</div>
 		</div>
 	</div>
 </aside>
-<div>
+<section class="main">
+<section class="ui celled list">
+	<div class="item">Cats</div>
+	<div class="item">Horses</div>
+	<div class="item">Dogs</div>
+</section>
+</section>
+<div class="ui modal" id="post_panel">
+	<i class="close icon"></i>
+	<div class="header">发表新帖</div>
+	<div class="content">
+	</div>
+	<div class="actions">
+		<div class="ui positive blue button">提交</div>
+	</div>
 </div>
 </body>
 </html>

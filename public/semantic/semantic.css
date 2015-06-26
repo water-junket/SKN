@@ -11182,7 +11182,7 @@ ul.ui.list li:before,
   top: auto;
   left: auto;
   margin-left: -1rem;
-  content: '鈥�;
+  content: '•';
   opacity: 1;
   color: rgba(0, 0, 0, 0.8);
   vertical-align: top;
@@ -13510,7 +13510,7 @@ ol.ui.horizontal.list li:before,
 .ui.ordered.steps .step.completed:before {
   font-family: 'Step';
   content: '\e800';
-  /* '顮� */
+  /* '' */
 }
 
 /*******************************
@@ -18627,7 +18627,7 @@ ol.ui.horizontal.list li:before,
 
 .ui.message ul.list li:before {
   position: absolute;
-  content: '鈥�;
+  content: '•';
   left: -1em;
   height: 100%;
   vertical-align: baseline;
@@ -23738,7 +23738,7 @@ a.ui.card:hover,
 }
 
 /*  UTF Reference
-.check:before { content: '\e800'; }  '顮�
+.check:before { content: '\e800'; }  ''
 .circle:before { content: '\e801'; }
 .ok-circled:before { content: '\e806'; }
 .ok-circle:before { content: '\e805'; }

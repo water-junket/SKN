@@ -33,4 +33,13 @@ a {
 
 .stock.ui.sidebar{
 	width: 180px;
+	overflow-y: visible!important;
+}
+
+.stock.ui.sidebar .menu .item{
+	padding: 0.78571em 0.45em;;
+}
+
+.ui.popup{
+	max-width: 1000px!important;
 }

@@ -19,6 +19,7 @@
     "passport-local": "*",
     "connect-flash": "*",
     "compression": "*",
-    "connect-mongo": "*"
+    "connect-mongo": "*",
+    "fs": "*"
   }
 }
